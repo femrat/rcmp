@@ -1,0 +1,81 @@
+\documentclass[a4paper]{paper}
+\usepackage{geometry}
+\geometry{left=1cm,right=1cm,top=1cm,bottom=1cm}
+\paperwidth 50 true cm
+\paperheight 65 true cm
+\usepackage{multirow}
+\usepackage{array}
+\begin{document}
+
+\textbf{Result Files}\\
+{{range $idx, $this := .ReportHeader}}{{if eq $idx 0}}Base{{else}}{{$idx}}{{end}}: {{.FileName | Tex}} \\
+{{end}}
+Note:\\
+W means base wins, the competitor loses.\\
+D means draw, INCLUDING both results are n/a.\\
+L means base loses.\\
+
+\begin{tabular}{|l|c|* {{- Sub 1 (len .ReportHeader) -}} {c|c|} }
+\hline
+
+{{define "Core" -}}
+
+Group|Count
+{{- range $idx, $this := .ReportHeader -}}
+	{{- if gt $idx 0 -}}
+		|[{{$idx}}]-Delta|L/D/W {{- /* worse, equal, better */ -}}
+	{{- end -}}
+{{- end }} ~~~~ \\ \hline
+
+{{ range $gIdx, $gName := .GroupName -}}
+	{{ $gName | Tex }}
+	{{- range $rIdx, $this := $.ReportHeader -}}
+		{{- if eq $rIdx 0 -}}
+			|{{- (index $.GroupCap $gIdx) -}}
+		{{- else -}}
+			{{- $cur := (index $.PCounting $gIdx $rIdx) -}}
+			|
+			{{- if lt (index $cur "Delta").I 0 -}} \textbf{ {{- end -}}
+				{{- (index $cur "Delta").I -}}
+			{{- if lt (index $cur "Delta").I 0 -}}        } {{- end -}}
+			|
+			{{- if lt (index $cur "Worse").I (index $cur "Better").I -}} \textbf{ {{- end -}}
+				{{- (index $cur "Better").I -}}
+			{{- if lt (index $cur "Worse").I (index $cur "Better").I -}}        } {{- end -}}
+			/
+			{{- (index $cur "EqualWithNA").I -}}
+			/
+			{{- if gt (index $cur "Worse").I (index $cur "Better").I -}} \textbf{ {{- end -}}
+				{{- (index $cur "Worse").I -}}
+			{{- if gt (index $cur "Worse").I (index $cur "Better").I -}}        } {{- end -}}
+		{{- end -}}
+	{{- end}} ~~~~ \\ \hline
+{{end}}
+Total
+{{- range $rIdx, $this := $.ReportHeader -}}
+	{{- if eq $rIdx 0 -}}
+		|{{- $.InstanceFileCount -}}
+	{{- else -}}
+		{{- $cur := (index $.FCounting $rIdx) -}}
+		|
+		{{- if lt (index $cur "Delta").I 0 -}} \textbf{ {{- end -}}
+			{{- (index $cur "Delta").I -}}
+		{{- if lt (index $cur "Delta").I 0 -}}        } {{- end -}}
+		|
+		{{- if lt (index $cur "Worse").I (index $cur "Better").I -}} \textbf{ {{- end -}}
+			{{- (index $cur "Better").I -}}
+		{{- if lt (index $cur "Worse").I (index $cur "Better").I -}}        } {{- end -}}
+		/
+		{{- (index $cur "EqualWithNA").I -}}
+		/
+		{{- if gt (index $cur "Worse").I (index $cur "Better").I -}} \textbf{ {{- end -}}
+			{{- (index $cur "Worse").I -}}
+		{{- if gt (index $cur "Worse").I (index $cur "Better").I -}}        } {{- end -}}
+	{{- end -}}
+{{- end}} ~~~~ \\ \hline
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $  |  Align "|" " & " |  Align "~~~~" "" }}
+\end{tabular}
+
+\end{document}

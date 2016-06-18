@@ -1,0 +1,44 @@
+{{range $idx, $this := .ReportHeader}}[{{$idx}}] {{.FileName}}
+{{end}}
+
+{{define "Core" -}}
+
+Num|Instance{{range $idx, $this := .ReportHeader}}|[{{$idx}}]|Time{{end}}
+
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{$rowIdx|Add 1|printf "%02d"}}|{{$rowFile.FileName|TrimSuffix ".cnf"}}
+	{{- range $rIdx, $res := (index $.Results $rowIdx) -}}
+		|
+		{{- if eq $rIdx 0 -}}
+			{{- /*** base result ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if $res.IsBest -}}*{{else}} {{end -}}
+				{{$res.Opt}}|{{$res.Time}}
+			{{- else -}}
+				n/a|n/a
+			{{- end -}}
+		{{- else -}}
+			{{- /*** other results ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if eq $res.CompareToBase "better" -}}*{{else}} {{end -}}
+				{{- if $res.Base.IsValid -}}
+					{{printf "%+d" $res.OptDiff}}|{{$res.Time}}
+				{{- else -}}
+					({{$res.Opt}})|{{$res.Time}}
+				{{- end -}}
+			{{- else}} n/a|n/a
+			{{- end -}}
+		{{- end -}}
+	{{- end}}
+{{end}}{{/* range */}}
+{{range $key := ((index $.Counting 0).Keys) -}}
+	>>|{{$key}}|-|-
+	{{- range $idx, $this := $.Counting -}}
+		{{- $cur := (index $this $key) }}
+		{{- if gt $idx 0}}|{{if $cur.IsGreatest}}*{{else}} {{end}}{{$cur.I}}|-{{end -}}
+	{{- end}}
+{{end -}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | " -}}

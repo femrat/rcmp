@@ -1,0 +1,44 @@
+,
+{{- range $idx, $this := .ReportHeader -}}
+	{{- if gt $idx 0 -}}
+		,{{$this.FileName}},,,,,,
+	{{- end -}}
+{{- end }}
+Group,Count
+{{- range $idx, $this := .ReportHeader -}}
+	{{- if gt $idx 0 -}}
+		,Delta,Better,Equal,Worse,EqualWithNA,BothNA,NA
+	{{- end -}}
+{{- end }}
+{{ range $gIdx, $gName := .GroupName -}}
+	{{ $gName }}
+	{{- range $rIdx, $this := $.ReportHeader -}}
+		{{- if eq $rIdx 0 -}}
+			,{{- (index $.GroupCap $gIdx) -}}
+		{{- else -}}
+			{{- $cur := (index $.PCounting $gIdx $rIdx) -}}
+			,{{(index $cur "Delta").I -}}
+			,{{(index $cur "Better").I -}}
+			,{{(index $cur "Equal").I -}}
+			,{{(index $cur "Worse").I -}}
+			,{{(index $cur "EqualWithNA").I -}}
+			,{{(index $cur "BothNA").I -}}
+			,{{(index $cur "NA").I -}}
+		{{- end -}}
+	{{- end}}
+{{end -}}
+Summary
+{{- range $rIdx, $this := $.ReportHeader -}}
+	{{- if eq $rIdx 0 -}}
+		,{{- $.InstanceFileCount -}}
+	{{- else -}}
+		{{- $cur := (index $.FCounting $rIdx) -}}
+		,{{(index $cur "Delta").I -}}
+		,{{(index $cur "Better").I -}}
+		,{{(index $cur "Equal").I -}}
+		,{{(index $cur "Worse").I -}}
+		,{{(index $cur "EqualWithNA").I -}}
+		,{{(index $cur "BothNA").I -}}
+		,{{(index $cur "NA").I -}}
+	{{- end -}}
+{{- end}}

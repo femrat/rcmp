@@ -1,0 +1,69 @@
+\documentclass[a4paper]{paper}
+\usepackage{geometry}
+\geometry{left=1cm,right=1cm,top=1cm,bottom=1cm}
+\paperwidth 50 true cm
+\paperheight 65 true cm
+\usepackage{multirow}
+\usepackage{array}
+\begin{document}
+
+\textbf{Result Files}\\
+{{range $idx, $this := .ReportHeader}}{{$idx}}: {{.FileName | Tex}}
+{{end}}
+
+\begin{tabular}{|l|* {{- len .ReportHeader -}} {c|c|} }
+\hline
+
+{{define "Core" -}}
+
+Instance{{range $idx, $this := .ReportHeader}}|[{{$idx}}]Opt|Time{{end}} ~~~~ \\ \hline
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{- $rowFile.FileName | TrimSuffix ".cnf" | Tex -}}
+	{{- range $rIdx, $res := (index $.Results $rowIdx) -}}
+		|
+		{{- if eq $rIdx 0 -}}
+			{{- /*** base result ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if $res.IsBest -}} \textbf{ {{- end -}}
+				{{$res.Opt}}
+				{{- if $res.IsBest -}}        } {{- end -}}
+				|{{$res.Time}}
+			{{- else -}}
+				n/a|n/a
+			{{- end -}}
+		{{- else -}}
+			{{- /*** other results ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if $res.Base.IsValid -}}
+					{{- if eq $res.CompareToBase "better" "equal" -}} \textbf{ {{- end -}}
+					{{printf "%+d" $res.OptDiff}}
+					{{- if eq $res.CompareToBase "better" "equal" -}}        } {{- end -}}
+					|{{$res.Time}}
+				{{- else -}}
+					\textbf{({{$res.Opt}})}|{{$res.Time}}
+				{{- end -}}
+			{{- else}} n/a|n/a
+			{{- end -}}
+		{{- end -}}
+	{{- end}} ~~~~ \\ \hline
+{{end}}{{/* range */}}
+{{range $key := ((index $.Counting 0).Keys) -}}
+	{{$key | Tex}}|-|-
+	{{- range $idx, $this := $.Counting -}}
+		{{- $cur := (index $this $key) }}
+		{{- if gt $idx 0 -}}
+		|
+			{{- if $cur.IsGreatest -}} \textbf{ {{- end -}}
+			{{- $cur.I -}}
+			{{- if $cur.IsGreatest -}} } {{- end -}}
+		|-
+		{{- end -}}
+	{{- end}} ~~~~ \\ \hline
+{{end -}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $  |  Align "|" " & " |  Align "~~~~" "" }}
+\end{tabular}
+
+\end{document}

@@ -1,0 +1,33 @@
+{{- range $idx, $this := .ReportHeader -}}
+		,{{$this.FileName}},
+{{- end }}
+Instance{{range $idx, $this := .ReportHeader}},Opt,Time{{end}}
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{$rowFile.FileName}}
+	{{- range $rIdx, $res := (index $.Results $rowIdx) -}}
+		,
+		{{- if eq $rIdx 0 -}}
+			{{- /*** base result ***/ -}}
+			{{- if $res.IsValid -}}
+				{{$res.Opt}},{{$res.Time}}
+			{{- else -}}
+				n/a,n/a
+			{{- end -}}
+		{{- else -}}
+			{{- /*** other results ***/ -}}
+			{{- if $res.IsValid -}}
+				{{$res.Opt}},{{$res.Time}}
+			{{- else}}n/a,n/a
+			{{- end -}}
+		{{- end -}}
+	{{- end}}
+{{end}}{{/* range */}}
+{{- range $key := ((index $.Counting 0).Keys) -}}
+	{{$key}},-,-
+	{{- range $idx, $this := $.Counting -}}
+		{{- $cur := (index $this $key) }}
+		{{- if gt $idx 0}},{{$cur.I}},-{{end -}}
+	{{- end}}
+{{end -}}
+
+

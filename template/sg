@@ -1,0 +1,46 @@
+{{range $idx, $this := .ReportHeader}}{{if eq $idx 0}}[Base]{{else}}[{{$idx}}]{{end}} {{.FileName}}
+{{end}}
+
+{{define "Core" -}}
+
+Group|Count
+{{- range $idx, $this := .ReportHeader -}}
+	{{- if gt $idx 0 -}}
+		|[{{$idx}}]-Delta|Equal|Worse
+	{{- end -}}
+{{- end }}
+
+{{ range $gIdx, $gName := .GroupName -}}
+	{{ $gName }}
+	{{- range $rIdx, $this := $.ReportHeader -}}
+		{{- if eq $rIdx 0 -}}
+			|{{- (index $.GroupCap $gIdx) -}}
+		{{- else -}}
+			{{- $cur := (index $.PCounting $gIdx $rIdx) -}}
+			|
+			{{- if (index $cur "Delta").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Delta").I -}}
+			|
+			{{- if (index $cur "Equal").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Equal").I -}}
+			|
+			{{- if (index $cur "Worse").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Worse").I -}}
+		{{- end -}}
+	{{- end}}
+{{end}}
+Summary
+{{- range $rIdx, $this := $.ReportHeader -}}
+	{{- if eq $rIdx 0 -}}
+		|{{- $.InstanceFileCount -}}
+	{{- else -}}
+		{{- $cur := (index $.FCounting $rIdx) -}}
+		|
+		{{- if (index $cur "Delta").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Delta").I -}}
+		|
+		{{- if (index $cur "Equal").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Equal").I -}}
+		|
+		{{- if (index $cur "Worse").IsGreatest -}}*{{else}} {{end}}{{(index $cur "Worse").I -}}
+	{{- end -}}
+{{- end}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | "}}
