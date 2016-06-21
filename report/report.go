@@ -2,7 +2,6 @@ package report
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -41,20 +40,22 @@ func NewReport(reader io.Reader, fileName, splitStr string) (*Report, error) {
 	br := bufio.NewReader(reader)
 	for {
 		line, err := br.ReadString('\n')
-		if err == nil {
-			line = strings.TrimRight(line, "\r\n")
-			if len(line) == 0 {
-				return nil, fmt.Errorf("Meet an empty line in %s", fileName)
-			}
+		if err != nil && err != io.EOF {
+			return nil, err
+		}
+		line = strings.TrimRight(line, "\r\n")
+
+		// empty line is allowed, and nothing will be performed
+		if line != "" {
 			row := new(ReportRow)
 			slice := strings.Split(line, splitStr)
 			row.File = slice[0]
 			row.Values = slice[1:]
 			rep.Rows = append(rep.Rows, row)
-		} else if err == io.EOF {
+		}
+
+		if err == io.EOF {
 			break
-		} else {
-			return nil, err
 		}
 	}
 	return rep, nil
