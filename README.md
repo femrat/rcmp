@@ -116,23 +116,23 @@ rcmp 会尝试打开`TEMPLATE`，如果失败，则会尝试在 rcmp 所在目�
 如果预处理器中做了`-trim-suffix`等操作，那么此处`old-instance-name`应是处理后的名字。
 `FILE`中行的顺序没有影响，但是不允许相同的`old-instance-file`出现两次。
 
-支持的模板：`s`，`s.csv`，`s.tex`，分别为控制台样式，csv和latex。
+支持的模板：`s`，`s.csv`，`s.tex`，分别为控制台样式，csv 和 latex。
 
-### engine: sg (Compare separately and group by given groupFile.)
+### engine: sg (Compare separately and group by given rules.)
 这个 engine 与 s 类似，都是将输入的第一个 report 作为基础，将其他 report 依次独立地与其相比。
 只是该 engine 会将比对的结果按照指定的分组规则合并。
 
 sg 的必选参数是`-group GROUP-FILE`。其中`GROUP-FILE`是分组规则，格式为`group-name instance-file`，如：
 
-	divider divider-problem.dimacs_11.filtered.cnf
-	divider divider-problem.dimacs_2.filtered.cnf
-	divider divider-problem.dimacs_5.filtered.cnf
-	divider divider-problem.dimacs_8.filtered.cnf
+	divider  divider-problem.dimacs_11.filtered.cnf
+	divider  divider-problem.dimacs_2.filtered.cnf
+	divider  divider-problem.dimacs_5.filtered.cnf
+	divider  divider-problem.dimacs_8.filtered.cnf
 	mem_ctrl mem_ctrl-problem.dimacs_27.filtered.cnf
 
 这里严格要求`GROUP-FILE`中的每个 instanec-file 都能和 report 中的对应。
 如果预处理器中做了`-trim-suffix`等操作，那么此处`instance-name`应是处理后的名字。
 template 收到的分组顺序，以`GROUP-FILE`中的每个分组第一次出现的顺序为准。
 
-支持的模板：`sg`，`sg.csv`，`sg.tex`，分别为控制台样式，csv和latex。
+支持的模板：`sg`，`sg.csv`，`sg.tex`，分别为控制台样式，csv 和 latex。
 
