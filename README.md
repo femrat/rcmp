@@ -139,15 +139,15 @@ template 收到的分组顺序，以`GROUP-FILE`中的每个分组第一次出�
 
 ## Examples
 
-- 分别对比`report1.sum`、`report2.sum`、`report3.sum`：
+分别对比`report1.sum`、`report2.sum`、`report3.sum`：
 
 	rcmp s -t s report1.sum report2.sum report3.sum
 
-- 分组对比`report1.sum`、`report2.sum`、`report3.sum`，分组规则文件`g.txt`，输出 latex 格式的表格：
+分组对比`report1.sum`、`report2.sum`、`report3.sum`，分组规则文件`g.txt`，输出 latex 格式的表格：
 
 	rcmp sg -t sg.tex -group g.txt report1.sum report2.sum report3.sum
 
-- 分别对比`report1.sum`、`report2.sum`，以及由`r3/`文件夹中所有文件的最后一行组成的 report，输出 csv：
+分别对比`report1.sum`、`report2.sum`，以及由`r3/`文件夹中所有文件的最后一行组成的 report，输出 csv：
 
 	rcmp s -t s.csv report1.sum report2.sum <(tail -q -n1 r3/*)
 
