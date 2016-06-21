@@ -210,12 +210,12 @@ func (e *sgEngine) Run(writer io.Writer, rc []*report.Report) error {
 func (e *sgEngine) Name() string { return "sg" }
 
 func (e *sgEngine) AdditionalHelp() string {
-	return "Compare separately and group by given groupFile."
+	return "Compare separately and group by given rules."
 }
 
 func (e *sgEngine) SetFlags(flag *flag.FlagSet) {
 	e.basicEngine.SetFlags(flag)
-	flag.StringVar(&e.groupFile, "group", "", "The group information should be provided in `FILE`.")
+	flag.StringVar(&e.groupFile, "group", "", "The grouping rules should be provided in `FILE`.")
 }
 
 func init() {

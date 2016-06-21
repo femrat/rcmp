@@ -34,7 +34,7 @@ func (p *preprocessor) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&p.sTrimSuffix, "trim-suffix", "",
 		"Trim suffix `SUFFIX` from instance-file, such as extension.")
 	f.StringVar(&p.sFilter, "filter-file", "",
-		"Filter the instance-file by given `FILE`, include only the specificed instance-files.")
+		"Filter the instance-file by given `FILTER-FILE`, include only the specificed instance-files.")
 	f.BoolVar(&p.sFilterSort, "filter-sort", false,
 		"Sort the rows in each report by the order of filter. Must be used with -filter-file.")
 	f.BoolVar(&p.sIntersection, "intersection", false,
