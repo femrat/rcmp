@@ -93,6 +93,10 @@ func (p *preprocessor) Run(filenames []string) error {
 		}
 	}
 
+	if p.sFilterSort && p.sFilter == "" {
+		return fmt.Errorf("-filter-sort must be used with -filter")
+	}
+
 	if p.sIntersection {
 		if err := p.intersection(); err != nil {
 			return err
