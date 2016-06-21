@@ -136,3 +136,21 @@ template 收到的分组顺序，以`GROUP-FILE`中的每个分组第一次出�
 
 支持的模板：`sg`，`sg.csv`，`sg.tex`，分别为控制台样式，csv 和 latex。
 
+
+## Examples
+
+- 分别对比`report1.sum`、`report2.sum`、`report3.sum`：
+
+	rcmp s -t s report1.sum report2.sum report3.sum
+
+- 分组对比`report1.sum`、`report2.sum`、`report3.sum`，分组规则文件`g.txt`，输出 latex 格式的表格：
+
+	rcmp sg -t sg.tex -group g.txt report1.sum report2.sum report3.sum
+
+- 分别对比`report1.sum`、`report2.sum`，以及由`r3/`文件夹中所有文件的最后一行组成的 report，输出 csv：
+
+	rcmp s -t s.csv report1.sum report2.sum <(tail -q -n1 r3/*)
+
+注意这里，bash 会自动给`*`扩展排序，所以`<(tail -q -n1 r3/*)`是按照`r3/*`扩展出的文件名排序后的文件的最后一行组成。
+可以通过`cat <(tail -q -n1 r3/*)`观察。必要时可能需要辅助以`-filter-file`和`-filter-sort`。
+注意这时实例名是分配的管道，可能难以观察。建议做法是将`tail`输出永久保存。
