@@ -2,13 +2,25 @@ package stderr
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
+var output io.Writer = os.Stderr
+
 func Logf(format string, values ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, values...)
+	if output != nil {
+		fmt.Fprintf(output, format, values...)
+	}
 }
 
 func Logln(values ...interface{}) {
-	fmt.Fprintln(os.Stderr, values...)
+	if output != nil {
+		fmt.Fprintln(output, values...)
+	}
+}
+
+// set to nil to disable output
+func SetOutput(w io.Writer) {
+	output = w
 }
