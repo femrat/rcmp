@@ -124,6 +124,9 @@ func basicCountingCellUpdates(counting []basicCountingCell) {
 	for i := range counting {
 		counting[i]["Delta"].I = counting[i]["Better"].I - counting[i]["Worse"].I
 	}
+}
+
+func basicCountingCellMarks(counting []basicCountingCell) {
 	for _, key := range counting[0].Keys() {
 		markBest(len(counting), func(i, j int) int64 { return int64(counting[i][key].I - counting[j][key].I) }, func(k int) { counting[k][key].IsGreatest = true })
 		markBest(len(counting), func(i, j int) int64 { return int64(counting[j][key].I - counting[i][key].I) }, func(k int) { counting[k][key].IsLeast = true })

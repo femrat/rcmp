@@ -165,12 +165,14 @@ func (e *sgEngine) makeCounting() (pCounting [][]basicCountingCell, fCounting []
 	fCounting = make([]basicCountingCell, len(e.rc))
 	init(fCounting)
 	for gIdx := range e.groupName {
-		basicCountingCellUpdates(pCounting[gIdx])
+		basicCountingCellUpdates(pCounting[gIdx][1:])
+		basicCountingCellMarks(pCounting[gIdx][1:])
 		for rIdx := range e.rc {
 			fCounting[rIdx].addFrom(pCounting[gIdx][rIdx])
 		}
 	}
-	basicCountingCellUpdates(fCounting)
+	basicCountingCellUpdates(fCounting[1:])
+	basicCountingCellMarks(fCounting[1:])
 
 	return
 }

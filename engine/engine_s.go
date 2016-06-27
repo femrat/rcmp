@@ -132,7 +132,7 @@ func (e *sEngine) makeOneReportRow(rowIdx int, counting []basicCountingCell) ([]
 						counting[rIdx].increase("Equal")
 						counting[rIdx].increase("EqualWithNA")
 					} else {
-						row[rIdx].compareToBase = "Worse"
+						row[rIdx].compareToBase = "worse"
 						counting[rIdx].increase("Worse")
 					}
 				} else { // row[0].IsValid && !row[rIdx].IsValid
@@ -173,7 +173,9 @@ func (e *sEngine) makeReportsAndCounting() ([][]sResultCell, []basicCountingCell
 		}
 	}
 
-	basicCountingCellUpdates(counting)
+	// base's counting is not used except "NA" only.
+	basicCountingCellUpdates(counting[1:])
+	basicCountingCellMarks(counting[1:])
 
 	return table, counting, nil
 }
