@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -64,6 +65,18 @@ func alignString(splitStr, newSplitStr, inStr string) string {
 		panic("need splitStr")
 	}
 
+	// calculate the length of text on screen, control chars are not counted.
+	// Three valid control form:
+	// \033[1m
+	// \033[1;31m
+	// \033[1;31;43m
+	// If the control sequence is not valid, like "\033[1;31;m", all sequence is still invisible.
+	r := regexp.MustCompile("\033\\[[0-9;]*m")
+	plainLen := func(str string) int {
+		return len(r.ReplaceAllString(str, ""))
+	}
+	_ = plainLen("A")
+
 	var table [][]string
 	var terminateWithSlashN bool
 
@@ -97,13 +110,16 @@ func alignString(splitStr, newSplitStr, inStr string) string {
 		maxLen := 0
 		for _, row := range table {
 			// note: len(row)-1, pass the last element in the row, allow the last cell to overflow
-			if len(row)-1 > colIdx && len(row[colIdx]) > maxLen {
-				maxLen = len(row[colIdx])
+			if len(row)-1 > colIdx {
+				curLen := plainLen(row[colIdx])
+				if maxLen < curLen {
+					maxLen = curLen
+				}
 			}
 		}
 		for _, row := range table {
-			if len(row)-1 > colIdx && len(row[colIdx]) < maxLen {
-				row[colIdx] += strings.Repeat(" ", maxLen-len(row[colIdx]))
+			if len(row)-1 > colIdx {
+				row[colIdx] += strings.Repeat(" ", maxLen-plainLen(row[colIdx]))
 			}
 		}
 	}
@@ -145,6 +161,20 @@ func loadTemplateFromDisk(templateFile string) (*template.Template, error) {
 				panic(err)
 			}
 			return buf.String()
+		},
+		"Color": func(seq ...int) string {
+			switch len(seq) {
+			case 0:
+				return "\033[m"
+			case 1:
+				return fmt.Sprintf("\033[%dm", seq[0])
+			case 2:
+				return fmt.Sprintf("\033[%d;3%dm", seq[0], seq[1])
+			case 3:
+				return fmt.Sprintf("\033[%d;3%d;4%dm", seq[0], seq[1], seq[2])
+			default:
+				panic("Color function has up to 3 arguments")
+			}
 		},
 		"Align":      func(splitStr, newSplitStr, inStr string) string { return alignString(splitStr, newSplitStr, inStr) },
 		"Basename":   func(s string) string { return filepath.Base(s) },
