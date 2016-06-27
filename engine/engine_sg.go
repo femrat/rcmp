@@ -21,7 +21,7 @@ type sgEngine struct {
 func (e *sgEngine) init(rc []*report.Report) error {
 	e.rc = rc
 
-	if err := e.loadTemplate(""); err != nil {
+	if err := e.loadTemplate(defaultSgTemplate); err != nil {
 		return err
 	}
 	if err := e.basicEngine.parseCompareFunc(); err != nil {
@@ -223,3 +223,51 @@ func (e *sgEngine) SetFlags(flag *flag.FlagSet) {
 func init() {
 	addEngine(new(sgEngine))
 }
+
+var defaultSgTemplate = `{{range $idx, $this := .ReportHeader}}{{if eq $idx 0}}[{{Color 1}}Base{{Color}}]{{else}}[{{Color 1}}{{$idx}}{{Color}}]{{end}} {{.FileName}}
+{{end}}
+
+{{define "Core" -}}
+
+{{Color 1}}Group{{Color}}|{{Color 1}}Cnt{{Color}}
+{{- range $idx, $this := .ReportHeader -}}
+	{{- if gt $idx 0 -}}
+		|[{{Color 1}}{{$idx}}{{Color}}]|{{Color 1}}={{Color}}|{{Color 1}}W{{Color}}
+	{{- end -}}
+{{- end }}
+
+{{ range $gIdx, $gName := .GroupName -}}
+	{{Color 1}}{{ $gName }}{{Color}}
+	{{- range $rIdx, $this := $.ReportHeader -}}
+		{{- if eq $rIdx 0 -}}
+			|{{- (index $.GroupCap $gIdx) -}}
+		{{- else -}}
+			{{- $cur := (index $.PCounting $gIdx $rIdx) -}}
+			|
+			{{- if (index $cur "Delta").IsGreatest -}}{{Color 1 2}}{{else}}{{Color 1}}{{end}}{{(index $cur "Delta").I -}}{{Color -}}
+			|
+			{{- (index $cur "Equal").I -}}{{Color -}}
+			|
+			{{- (index $cur "Worse").I -}}{{Color -}}
+		{{- end -}}
+	{{- end}}
+{{end}}
+{{Color 1}}Summary{{Color}}
+{{- range $rIdx, $this := $.ReportHeader -}}
+	{{- if eq $rIdx 0 -}}
+		|{{- $.InstanceFileCount -}}
+	{{- else -}}
+		{{- $cur := (index $.FCounting $rIdx) -}}
+		|
+		{{- if (index $cur "Delta").IsGreatest -}}{{Color 1 2}}{{else}}{{Color 1}}{{end}}{{(index $cur "Delta").I -}}{{Color -}}
+		|
+		{{- (index $cur "Equal").I -}}
+		|
+		{{- (index $cur "Worse").I -}}
+	{{- end -}}
+{{- end}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | "}}
+`

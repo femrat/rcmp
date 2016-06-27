@@ -17,17 +17,19 @@ type basicEngine struct {
 }
 
 func (b *basicEngine) loadTemplate(defaultTemplate string) error {
+	b.theTemplate = template.New("top")
+	addTemplateFuncs(b.theTemplate)
+
 	if b.templateFile != "" {
-		if theTemplate, err := loadTemplateFromDisk(b.templateFile); err != nil {
+		if tplContent, err := getTemplateFromDisk(b.templateFile); err != nil {
 			return err
 		} else {
-			b.theTemplate = theTemplate
+			template.Must(b.theTemplate.Parse(tplContent))
 		}
 	} else {
 		if defaultTemplate == "" {
 			return fmt.Errorf("This engine does not have a default template. You must assign a template.")
 		}
-		b.theTemplate = template.New("top")
 		template.Must(b.theTemplate.Parse(defaultTemplate))
 	}
 	return nil

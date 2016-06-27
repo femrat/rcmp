@@ -134,30 +134,11 @@ func alignString(splitStr, newSplitStr, inStr string) string {
 	return out.String()
 }
 
-func loadTemplateFromDisk(templateFile string) (*template.Template, error) {
-	if _, err := os.Stat(templateFile); os.IsNotExist(err) {
-		templateFile = myBaseDir + "/template/" + templateFile
-		if _, err := os.Stat(templateFile); os.IsNotExist(err) {
-			return nil, fmt.Errorf("template file %s not found", templateFile)
-		}
-	}
-
-	fp, err := os.Open(templateFile)
-	if err != nil {
-		return nil, err
-	}
-	defer fp.Close()
-	b, err := ioutil.ReadAll(fp)
-	if err != nil {
-		return nil, err
-	}
-
-	theTemplate := template.New("top")
-
-	theTemplate.Funcs(template.FuncMap{
+func addTemplateFuncs(tpl *template.Template) {
+	tpl.Funcs(template.FuncMap{
 		"TemplateToString": func(name string, data interface{}) string {
 			buf := new(bytes.Buffer)
-			if err := theTemplate.ExecuteTemplate(buf, name, data); err != nil {
+			if err := tpl.ExecuteTemplate(buf, name, data); err != nil {
 				panic(err)
 			}
 			return buf.String()
@@ -200,12 +181,25 @@ func loadTemplateFromDisk(templateFile string) (*template.Template, error) {
 			return str
 		},
 	})
-	_, err = theTemplate.Parse(string(b))
-	if err != nil {
-		return nil, err
+}
+
+func getTemplateFromDisk(templateFile string) (string, error) {
+	for _, fn := range []string{templateFile, myBaseDir + "/template/" + templateFile} {
+		fp, err := os.Open(fn)
+		if os.IsNotExist(err) {
+			continue
+		} else if err != nil {
+			return "", err
+		}
+		defer fp.Close()
+		b, err := ioutil.ReadAll(fp)
+		if err != nil {
+			return "", err
+		}
+		return string(b), nil
 	}
 
-	return theTemplate, nil
+	return "", fmt.Errorf("template file %s not found", templateFile)
 }
 
 func markBest(len int, isBetter func(int, int) int64, mark func(int)) {

@@ -183,7 +183,7 @@ func (e *sEngine) makeReportsAndCounting() ([][]sResultCell, []basicCountingCell
 func (e *sEngine) init(rc []*report.Report) error {
 	e.rc = rc
 
-	if err := e.loadTemplate(""); err != nil {
+	if err := e.loadTemplate(defaultSTemplate); err != nil {
 		return err
 	}
 	if err := e.basicEngine.parseCompareFunc(); err != nil {
@@ -244,3 +244,63 @@ func (e *sEngine) SetFlags(flag *flag.FlagSet) {
 func init() {
 	addEngine(new(sEngine))
 }
+
+var defaultSTemplate = `{{range $idx, $this := .ReportHeader}}{{Color 1}}[{{$idx}}]{{Color}} {{.FileName}}
+{{end}}
+
+{{define "Core" -}}
+
+{{Color 1}}Num{{Color}}|{{Color 1}}Instance{{Color}}{{range $idx, $this := .ReportHeader}}|{{Color 1}}[{{$idx}}]{{Color}}|{{Color 1}}Time{{Color}}{{end}}
+
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{Color 1}}{{$rowIdx|Add 1|printf "%02d"}}{{Color}}|{{$rowFile.FileName|TrimSuffix ".cnf"}}
+	{{- range $rIdx, $res := (index $.Results $rowIdx) -}}
+		|
+
+		{{- if eq $rIdx 0 -}}    {{- /*** base result ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if $res.IsBest -}}{{Color 1 2}}{{end -}}
+				{{- $res.Opt -}}
+				{{- Color -}}
+				|
+				{{- $res.Time -}}
+			{{- else -}}
+				{{Color 0 4}}n/a{{Color -}}
+				|n/a
+			{{- end -}}
+
+		{{- else -}}    {{- /*** other results ***/ -}}
+			{{- if $res.IsValid -}}
+				{{- if eq $res.CompareToBase "better" -}}{{Color 1 2}}{{end -}}
+				{{- if $res.Base.IsValid -}}
+					{{- printf "%+d" $res.OptDiff}}{{Color -}}
+				{{- else -}}
+					(
+					{{- Color 1 2}}{{$res.Opt}}{{Color -}}
+					)
+				{{- end -}}
+				|
+				{{- $res.Time -}}
+			{{- else}}{{Color 0 1}}n/a{{Color}}|n/a
+			{{- end -}}
+
+		{{- end -}}
+	{{- end}}
+{{end}}{{/* range */}}
+{{range $key := ((index $.Counting 0).Keys) -}}
+	>>|{{Color 1}}{{$key}}{{Color}}|-|-
+	{{- range $idx, $this := $.Counting -}}
+		{{- $cur := (index $this $key) }}
+		{{- if gt $idx 0 -}}
+			|
+			{{- if $cur.IsGreatest}}{{Color 1 2}}{{end -}}
+			{{- $cur.I -}}{{Color -}}
+			|-
+		{{- end -}}
+	{{- end}}
+{{end -}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | " -}}
+`
