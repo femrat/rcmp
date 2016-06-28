@@ -75,7 +75,6 @@ func alignString(splitStr, newSplitStr, inStr string) string {
 	plainLen := func(str string) int {
 		return len(r.ReplaceAllString(str, ""))
 	}
-	_ = plainLen("A")
 
 	var table [][]string
 	var terminateWithSlashN bool
