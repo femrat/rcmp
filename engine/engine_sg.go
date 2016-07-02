@@ -19,12 +19,7 @@ type sgEngine struct {
 }
 
 func (e *sgEngine) init(rc []*report.Report) error {
-	e.rc = rc
-
-	if err := e.loadTemplate(defaultSgTemplate); err != nil {
-		return err
-	}
-	if err := e.basicEngine.parseCompareFunc(); err != nil {
+	if err := e.basicEngine.init(rc, defaultSgTemplate); err != nil {
 		return err
 	}
 

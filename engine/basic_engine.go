@@ -16,6 +16,19 @@ type basicEngine struct {
 	rc []*report.Report
 }
 
+func (b *basicEngine) init(rc []*report.Report, defaultTemplate string) error {
+	b.rc = rc
+
+	if err := b.loadTemplate(defaultTemplate); err != nil {
+		return err
+	}
+	if err := b.parseCompareFunc(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (b *basicEngine) loadTemplate(defaultTemplate string) error {
 	b.theTemplate = template.New("top")
 	addTemplateFuncs(b.theTemplate)

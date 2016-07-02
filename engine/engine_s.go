@@ -180,25 +180,12 @@ func (e *sEngine) makeReportsAndCounting() ([][]sResultCell, []basicCountingCell
 	return table, counting, nil
 }
 
-func (e *sEngine) init(rc []*report.Report) error {
-	e.rc = rc
-
-	if err := e.loadTemplate(defaultSTemplate); err != nil {
-		return err
-	}
-	if err := e.basicEngine.parseCompareFunc(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // ==================
 // Exported Functions
 // ==================
 
 func (e *sEngine) Run(writer io.Writer, rc []*report.Report) error {
-	if err := e.init(rc); err != nil {
+	if err := e.init(rc, defaultSTemplate); err != nil {
 		return err
 	}
 
