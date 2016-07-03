@@ -1,0 +1,17 @@
+{{range $idx, $this := .ReportHeader}}[{{$idx}}] {{.FileName}}
+{{end}}
+
+Instance,BestOpt,AvgOpt,AvgTime
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{- $res := (index $.Results $rowIdx) -}}
+	{{- $rowFile.FileName -}}
+	,
+	{{- $res.BestOpt -}}
+	,
+	{{- printf "%.2f" $res.AvgOpt -}}
+	,
+	{{- printf "%.2f" $res.AvgTime}}
+{{end -}}
+
+Summary,-,{{printf "%.2f" .AvgOpt}},{{printf "%.2f" .AvgTime}}
+

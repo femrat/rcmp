@@ -1,0 +1,10 @@
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{- $res := (index $.Results $rowIdx) -}}
+	{{- $rowFile.FileName -}}
+	{{- printf "\t" -}}
+	{{- $res.BestOpt -}}
+	{{- printf "\t" -}}
+	{{- printf "%.2f" $res.AvgOpt -}}
+	{{- printf "\t" -}}
+	{{- printf "%.2f" $res.AvgTime}}
+{{end -}}

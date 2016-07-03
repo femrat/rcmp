@@ -1,0 +1,23 @@
+{{range $idx, $this := .ReportHeader}}[{{$idx}}] {{.FileName}}
+{{end}}
+
+{{define "Core" -}}
+
+Num|Instance|BestOpt|AvgOpt|AvgTime
+
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{- $res := (index $.Results $rowIdx) -}}
+	{{- $rowIdx|Add 1|printf "%02d" -}}
+	|
+	{{- $rowFile.FileName -}}
+	|
+	{{- $res.BestOpt -}}
+	|
+	{{- printf "%.2f" $res.AvgOpt -}}
+	|
+	{{- printf "%.2f" $res.AvgTime}}
+{{end}}
+>>|>>|-|{{printf "%.2f" .AvgOpt}}|{{printf "%.2f" .AvgTime}}
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | " }}
