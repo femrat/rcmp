@@ -5,7 +5,6 @@ import (
 	"github.com/femrat/rcmp/engine"
 	"github.com/femrat/rcmp/stderr"
 	"os"
-	"path/filepath"
 )
 
 var preproc = newPreProcessor()
@@ -32,8 +31,8 @@ There're engines you can choose. The options of them are listed as follows.
 	engine.PrintEngineHelp(os.Stderr)
 }
 
-func Go(programName string, args []string) {
-	engine.SetMyBaseDir(filepath.Dir(programName))
+func Go(basePath string, args []string) {
+	engine.SetMyBaseDir(basePath)
 	preproc.SetFlags(flag.CommandLine)
 
 	if len(args) == 0 {
