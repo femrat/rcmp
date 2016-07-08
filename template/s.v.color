@@ -1,0 +1,49 @@
+{{- define "Core" -}}
+
+{{- Color 1}}ReportFile{{Color}}|
+{{- Color 1}}Delta{{Color}}|
+{{- Color 1}}Better{{Color}}|
+{{- Color 1}}Equal{{Color}}|
+{{- Color 1}}Worse{{Color}}|
+{{- Color 1}}BothNA{{Color}}|
+{{- Color 1}}NA{{Color}}
+
+{{ range $rIdx, $header := .ReportHeader -}}
+	{{- Color 1  }}{{  $header.FileName  }}{{  Color -}}
+	|
+
+	{{- $cur := (index $.Counting $rIdx) -}}
+	{{- /* keys: "Better", "Worse", "Delta", "Equal", "EqualWithNA", "BothNA", "NA" */ -}}
+
+	{{- if eq $rIdx 0 -}}
+		|||||{{ (index $cur "NA").I }}
+	{{- else -}}
+		{{- if (index $cur "Delta").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "Delta").I -}}
+		{{- Color -}}
+		|
+		{{- if (index $cur "Better").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "Better").I -}}
+		{{- Color -}}
+		|
+		{{- if (index $cur "Equal").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "Equal").I -}}
+		{{- Color -}}
+		|
+		{{- if (index $cur "Worse").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "Worse").I -}}
+		{{- Color -}}
+		|
+		{{- if (index $cur "BothNA").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "BothNA").I -}}
+		{{- Color -}}
+		|
+		{{- if (index $cur "NA").IsGreatest}}{{Color 1 2}}{{end -}}
+		{{- (index $cur "NA").I -}}
+		{{- Color -}}
+	{{- end  }}
+{{  end -}}
+
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | " -}}
