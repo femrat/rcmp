@@ -92,7 +92,7 @@ engine 运行之前，会做一个安全检查：检查所有 report 是否具�
 engine 中可能出现以下选项：
 
 - template 选择：`-t TEMPLATE`。其中`TEMPLATE`是模板的文件路径。
-rcmp 会尝试打开`TEMPLATE`，如果失败，则会尝试在 rcmp 所在目录下的 template/ 目录中寻找，如果仍未找到这个文件，会报错。
+rcmp 会尝试以当前工作目录直接打开`TEMPLATE`。如果失败，则会尝试使用默认路径：当配置了`RCMP_PATH`环境变量后，rcmp 会尝试在 $RCMP\_PATH/template 下寻找；如果环境变量未配置，则会在 rcmp 所在的目录下的 template/ 目录中寻找。
 
 - 比对模式：`-mode MODE`。目前该选项仅有一个有效输入且为默认，所以无需指定。
 `MODE`目前仅支持`sat`，并且其也是该选项的默认值。指定其他值均将报错。
