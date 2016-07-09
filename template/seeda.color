@@ -1,0 +1,41 @@
+{{range $idx, $this := .ReportHeader}}{{Color 1}}[{{$idx}}]{{Color}} {{.FileName}}
+{{end}}
+{{define "Core" -}}
+
+{{- range $idx, $this := .ReportHeader -}}
+	|{{Color 1}}[{{$idx}}]{{Color}}|
+{{- end}}
+{{Color 1}}Instance{{Color -}}
+{{- range $idx, $this := .ReportHeader -}}
+	|{{Color 1}}Best{{Color}}|{{Color 1}}Avg(Time){{Color}}
+{{- end}}
+
+{{range $rowIdx, $rowFile := .InstanceFile -}}
+	{{Color 1}}{{$rowFile.FileName}}{{Color}}
+	{{- range $rIdx, $res := (index $.Results $rowIdx) -}}
+		|
+		{{- if $res.WinBestOpt }}{{Color 1 2}}{{end -}}
+		{{- $res.BestOptI -}}
+		{{- Color -}}
+		|
+		{{- if $res.WinAvgOpt }}{{Color 1 2}}{{end -}}
+		{{- printf "%.2f" $res.AvgOptF -}}
+		{{- Color -}}
+		(
+		{{- printf "%.2f" $res.AvgTimeF -}}
+		)
+	{{- end}}
+{{end}}{{/* range */}}
+{{Color 1}}Summary{{Color}}
+{{- range $.Summary -}}
+	||
+	{{- if .WinAvgOpt }}{{Color 1 2}}{{end -}}
+	{{- printf "%.2f" .AvgOptF -}}
+	{{- Color -}}
+	(
+	{{- printf "%.2f" .AvgTimeF -}}
+	)
+{{- end -}}
+{{- end -}}{{- /* define */ -}}
+
+{{- TemplateToString "Core" $ | Align "|" " | " }}

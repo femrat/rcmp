@@ -4,7 +4,7 @@
 	{{- printf "\t" -}}
 	{{- $res.BestOpt -}}
 	{{- printf "\t" -}}
-	{{- printf "%.2f" $res.AvgOpt -}}
+	{{- $res.AvgOpt -}}
 	{{- printf "\t" -}}
-	{{- printf "%.2f" $res.AvgTime}}
+	{{- $res.AvgTime}}
 {{end -}}
